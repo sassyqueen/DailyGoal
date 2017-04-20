@@ -1,6 +1,8 @@
 package dailygoal.android.myapplicationdev.com.dailygoal;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +21,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button btn = (Button) findViewById(R.id.buttonOK);
+        final EditText etPersonalReflection = (EditText) findViewById(R.id.editTextReflection);
         btn.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View arg0) {
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 //Show a Toast that display the text on the selected radio button
                 Log.i("Value r3",  rb3.getText().toString());
 
-                EditText etPersonalReflection = (EditText) findViewById(R.id.editTextReflection);
+
                 String etValue = etPersonalReflection.getText().toString();
 
                 String[] values = {rb1.getText().toString(), rb2.getText().toString(), rb3.getText().toString(), etValue};
@@ -60,8 +63,37 @@ public class MainActivity extends AppCompatActivity {
                 intent.putExtra("values", values);
 
                 startActivity(intent);
+                SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt("rb1",rg1.getCheckedRadioButtonId());
+                editor.putInt("rb2", rg2.getCheckedRadioButtonId());
+                editor.putInt("rb3", rg3.getCheckedRadioButtonId());
+                editor.putString("et", etValue);
+                editor.commit();
 
             }});
+
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        final EditText etPersonalReflection = (EditText) findViewById(R.id.editTextReflection);
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+        RadioGroup rg1 = (RadioGroup) findViewById(R.id.radioGroup1);
+        RadioGroup rg2 = (RadioGroup) findViewById(R.id.radioGroup2);
+        RadioGroup rg3 = (RadioGroup) findViewById(R.id.radioGroup3);
+        int rb1 = preferences.getInt("rb1", 0);
+        int rb2 = preferences.getInt("rb2", 0);
+        int rb3 = preferences.getInt("rb3", 0);
+        String et = preferences.getString("et", "");
+        rg1.check(rb1);
+        rg2.check(rb2);
+        rg3.check(rb3);
+        etPersonalReflection.setText(et);
+
+
 
     }
 }
